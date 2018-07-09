@@ -25,6 +25,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *);
     void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
     void on_paint_btn_clicked();
@@ -39,13 +40,17 @@ private slots:
 
     void on_clear_btn_clicked();
 
-private:
+    void updateMap();
 
+private:
+    bool reset = false;
+    QTimer *timer;
     Ui::MainWindow *ui;
     int W, M, N;
     int x1, x2, y1, y2;
     bool select_start = false, select_end = false, isPaint = false;
     std::vector<std::vector<std::string>> p;
+    algorithm::list pList;
     void resizeWindow();
     void createRandomMap();
 

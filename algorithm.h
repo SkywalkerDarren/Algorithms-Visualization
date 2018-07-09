@@ -9,6 +9,7 @@
 class algorithm
 {
 public:
+    typedef std::vector<std::vector<std::vector<std::string>>> list;
     algorithm(std::vector<std::vector<std::string>> &p);
     class distance {
     public:
@@ -18,7 +19,7 @@ public:
         int bfs(int i, int j, int x2, int y2);
     };
     void setAlgo(int (algorithm::distance::*algo)(int, int, int, int));
-    std::vector<std::vector<std::string>> start();
+    list start();
 private:
     struct Node {
         int i, j, g, h;
@@ -36,7 +37,8 @@ private:
     std::vector<std::vector<int>> g;
     std::vector<std::vector<int>> s;
     void print(std::vector<std::vector<std::string> > &p, int x2, int y2);
-    void astar(int x1, int y1, int x2, int y2, std::vector<std::vector<std::string>> &p,
+    list astar(int x1, int y1, int x2, int y2,
+               std::vector<std::vector<std::string>> &p,
                const std::vector<std::vector<int>> g, std::vector<std::vector<int>> s,
                int(distance::*algo)(int, int, int, int));
     bool overflow(int a, int b, int m, int n);

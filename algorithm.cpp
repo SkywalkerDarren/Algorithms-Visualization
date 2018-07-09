@@ -30,15 +30,17 @@ void algorithm::setAlgo(int (distance::*algo)(int, int, int, int)) {
     this->algo = algo;
 }
 
-std::vector<std::vector<std::string>> algorithm::start() {
-    astar(x1,y1,x2,y2,p,g,s,algo);
-    return p;
+algorithm::list algorithm::start() {
+    list pList = astar(x1,y1,x2,y2,p,g,s,algo);
+    p = pList.back();
+    return pList;
 }
 
 int algorithm::distance::chebyshev(int i, int j, int x2, int y2) {
     return std::max(abs(i - x2), abs(j - y2)); //雪比切夫距离
 }
 int algorithm::distance::bfs(int i, int j, int x2, int y2) {
+    i = j = x2 = y2 = 0;
     return 0; //雪比切夫距离
 }
 int algorithm::distance::euclidean(int i, int j, int x2, int y2) {
@@ -48,10 +50,13 @@ int algorithm::distance::manhattan(int i, int j, int x2, int y2) {
     return abs(i - x2) + abs(j - y2); //曼哈顿距离
 }
 
-void algorithm::astar(int x1, int y1, int x2, int y2, std::vector<std::vector<std::string>> &p,
+algorithm::list algorithm::astar(int x1, int y1, int x2, int y2,
+           std::vector<std::vector<std::string>> &p,
            const std::vector<std::vector<int>> g, std::vector<std::vector<int>> s,
            int(distance::*algo)(int, int, int, int)) {
-    if (p.empty() || p[0].empty()) return;
+    std::vector<std::vector<std::vector<std::string>>> pList;
+    pList.push_back(p);
+    if (p.empty() || p[0].empty()) return pList;
     int M = p.size();
     int N = p[0].size();
     distance dis;
@@ -63,6 +68,7 @@ void algorithm::astar(int x1, int y1, int x2, int y2, std::vector<std::vector<st
     while (!q.empty()) {
         Node n = q.top();
         q.pop();
+        pList.push_back(p);
         for (int i = 0; i < 4; ++i) {
             int a = diri[i] + n.i;
             int b = dirj[i] + n.j;
@@ -73,6 +79,7 @@ void algorithm::astar(int x1, int y1, int x2, int y2, std::vector<std::vector<st
                 p[a][b] = dir[i];
                 if (a == x2 && b == y2) {
                     print(p,x2,y2);
+                    pList.push_back(p);
                     std::cout << "ok " << c << " step" << std::endl;
                     exit = true;
                     break;
@@ -86,7 +93,7 @@ void algorithm::astar(int x1, int y1, int x2, int y2, std::vector<std::vector<st
     if (!exit) {
         std::cout << "failed" << std::endl;
     }
-
+    return pList;
 }
 
 bool algorithm::overflow(int a, int b, int m, int n) {
@@ -94,25 +101,30 @@ bool algorithm::overflow(int a, int b, int m, int n) {
 }
 void algorithm::print(std::vector<std::vector<std::string> > &p, int x2, int y2) {
     int x = x2, y = y2;
+    int len = 0;
     while (p[x][y] != "S") {
         if (p[x][y] == dir[0]) {
             p[x][y] = "A";
             x -= diri[0];
             y -= dirj[0];
+            len++;
         } else if (p[x][y] == dir[1]) {
             p[x][y] = "A";
             x -= diri[1];
             y -= dirj[1];
+            len++;
         } else if (p[x][y] == dir[2]) {
             p[x][y] = "A";
             x -= diri[2];
             y -= dirj[2];
+            len++;
         } else if (p[x][y] == dir[3]) {
             p[x][y] = "A";
             x -= diri[3];
             y -= dirj[3];
+            len++;
         }
-
     }
+    std::cout << "length " << len << std::endl;
     p[x2][y2] = "E";
 }

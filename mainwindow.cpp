@@ -9,59 +9,47 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::paintEvent(QPaintEvent *) {
+    if(p.empty()) {return;}
     QPainter painter(this);
-    QPen pen(QColor(0,0,0));
-    QBrush brush(QColor(255,255,255));
-    painter.setBrush(brush);
+    QPen pen(QColor(128,128,128));
     painter.setPen(pen);
     const QPoint start(20, 80);
     const QPoint dir[] = {QPoint(0,W), QPoint(W,0)};
 
     QPoint pos = start;
     QRect rect(pos, QSize(W, W));
-    for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++) {
-            rect.moveTo(pos);
-            painter.drawRect(rect);
-            pos += dir[1];
-        }
-        pos -= N * dir[1];
-        pos += dir[0];
-    }
-    if(!p.empty()) {
-        for(int i = 0; i < p.size(); i++) {
-            for(int j = 0; j < p[i].size(); j++) {
-                if(p[i][j] == "O") {
-                    pos = start + i*dir[0] + j*dir[1];
-                    painter.setBrush(QColor(0,0,0));
-                    rect.moveTo(pos);
-                    painter.drawRect(rect);
-                } else if (p[i][j] == "X"){
-                    pos = start + i*dir[0] + j*dir[1];
-                    painter.setBrush(QColor(255,255,255));
-                    rect.moveTo(pos);
-                    painter.drawRect(rect);
-                } else if (p[i][j] == "S"){
-                    pos = start + i*dir[0] + j*dir[1];
-                    painter.setBrush(QColor(0,0,255));
-                    rect.moveTo(pos);
-                    painter.drawRect(rect);
-                } else if (p[i][j] == "E") {
-                    pos = start + i*dir[0] + j*dir[1];
-                    painter.setBrush(QColor(255,0,0));
-                    rect.moveTo(pos);
-                    painter.drawRect(rect);
-                } else if (p[i][j] == "A"){
-                    pos = start + i*dir[0] + j*dir[1];
-                    painter.setBrush(QColor(0,255,0));
-                    rect.moveTo(pos);
-                    painter.drawRect(rect);
-                } else {
-                    pos = start + i*dir[0] + j*dir[1];
-                    painter.setBrush(QColor(255,255,0));
-                    rect.moveTo(pos);
-                    painter.drawRect(rect);
-                }
+    for(int i = 0; i < p.size(); i++) {
+        for(int j = 0; j < p[i].size(); j++) {
+            if(p[i][j] == "O") {
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(0,0,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
+            } else if (p[i][j] == "X"){
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(255,255,255));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
+            } else if (p[i][j] == "S"){
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(0,0,255));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
+            } else if (p[i][j] == "E") {
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(255,0,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
+            } else if (p[i][j] == "A"){
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(0,255,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
+            } else {
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(255,255,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
             }
         }
     }
@@ -87,8 +75,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             tt = p[x1][y1];
             p[x1][y1] = "S";
             select_start = false;
-        }
-        if(select_end) {
+        } else if(select_end) {
             std::cout << (point.x()-20)/W << "," << (point.y()-80)/W << std::endl;
             static int xt,yt;
             static std::string tt;
@@ -102,7 +89,28 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             tt = p[x2][y2];
             p[x2][y2] = "E";
             select_end = false;
+        } else if (p[y][x] == "O") {
+            p[y][x] = "X";
+        } else if (p[y][x] == "X") {
+            p[y][x] = "O";
         }
+
+        update();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event) {
+    if(event->buttons() & Qt::LeftButton && event->pos().x() >= 20 && event->pos().x() <= 20 + W * N
+            && event->pos().y() >= 80 && event->pos().y() <= 80 + W * M) {
+        QPoint point = event->pos();
+        int x = (point.x()-20)/W;
+        int y = (point.y()-80)/W;
+        if (p[y][x] == "O") {
+            p[y][x] = "X";
+        } else if (p[y][x] == "X") {
+            p[y][x] = "O";
+        }
+
         update();
     }
 }
@@ -121,13 +129,13 @@ void MainWindow::resizeWindow() {
     int height = this->size().height();
     if(height < W*M + 100) {
         height = W*M + 100;
-    } else if(W*M + 100 < 300) {
-        height = 300;
+    } else if(W*M + 100 < 320) {
+        height = 600;
     }
     if (width < W*N + 40) {
         width = W*N + 40;
-    } else if(W*N + 40 < 400) {
-        width = 400;
+    } else if(W*N + 40 < 480) {
+        width = 800;
     }
     this->resize(width, height);
 
@@ -150,10 +158,9 @@ void MainWindow::createRandomMap() {
     }
     int row = ui->row_edit->text().toInt();
     int col = ui->col_edit->text().toInt();
-    double sq = std::sqrt(row*col);
-
+    double sq = ui->density_edit->text().toDouble();
     std::default_random_engine generator;
-    std::uniform_real_distribution<double> distribution(0, 3);
+    std::uniform_real_distribution<double> distribution(0, sq);
     typedef std::chrono::high_resolution_clock myclock;
     myclock::time_point beginning = myclock::now();
     myclock::duration d = myclock::now() - beginning;
@@ -214,12 +221,35 @@ void MainWindow::on_start_btn_clicked()
     }
     algorithm a(p);
     a.setAlgo(algo);
-    p = a.start();
-    update();
+    pList = a.start();
+    timer = new QTimer();
+    reset = false;
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateMap()));
+    timer->setInterval(ui->interval_edit->text().toInt());
+    timer->start();
+}
+
+void MainWindow::updateMap() {
+    static int i = 0;
+    if (reset) {
+        i = 0;
+        timer->stop();
+        reset = false;
+    }
+    if (i < pList.size()) {
+        p = pList[i];
+        update();
+        i++;
+    } else {
+        timer->stop();
+        i = 0;
+        reset = false;
+    }
 }
 
 void MainWindow::on_clear_btn_clicked()
 {
+    reset = true;
     if (p.empty()) return;
     for (int i = 0; i < p.size(); i++) {
         for (int j = 0; j < p[0].size(); j++) {
