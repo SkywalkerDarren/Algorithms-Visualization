@@ -15,7 +15,8 @@ void MainWindow::paintEvent(QPaintEvent *) {
     painter.setPen(pen);
     const QPoint start(20, 80);
     const QPoint dir[] = {QPoint(0,W), QPoint(W,0)};
-
+    int length = 0;
+    int steps = 0;
     QPoint pos = start;
     QRect rect(pos, QSize(W, W));
     for(int i = 0; i < p.size(); i++) {
@@ -45,14 +46,19 @@ void MainWindow::paintEvent(QPaintEvent *) {
                 painter.setBrush(QColor(0,255,0));
                 rect.moveTo(pos);
                 painter.drawRect(rect);
+                length++;
             } else {
                 pos = start + i*dir[0] + j*dir[1];
                 painter.setBrush(QColor(255,255,0));
                 rect.moveTo(pos);
                 painter.drawRect(rect);
+                steps++;
             }
         }
     }
+    std::string str = length == 0 ? "unreachable" : std::to_string(length);
+    ui->distance->setText(QString::fromStdString(str));
+    ui->steps->setText(QString::fromStdString(std::to_string(steps + length)));
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
@@ -75,6 +81,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             tt = p[x1][y1];
             p[x1][y1] = "S";
             select_start = false;
+            QString s = QString::fromStdString("(" + std::to_string(x) + "," + std::to_string(y) + ")");
+            ui->start_point->setText(s);
         } else if(select_end) {
             std::cout << (point.x()-20)/W << "," << (point.y()-80)/W << std::endl;
             static int xt,yt;
@@ -89,6 +97,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             tt = p[x2][y2];
             p[x2][y2] = "E";
             select_end = false;
+            QString s = QString::fromStdString("(" + std::to_string(x) + "," + std::to_string(y) + ")");
+            ui->end_point->setText(s);
         } else if (p[y][x] == "O") {
             p[y][x] = "X";
         } else if (p[y][x] == "X") {

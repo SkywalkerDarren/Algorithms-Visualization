@@ -24,6 +24,12 @@ private:
     struct Node {
         int i, j, g, h;
         bool operator<(const Node &a) const {
+            if ((a.g + a.h) == (g + h)) {
+                if(a.h == h) {
+                    return a.g < g;
+                }
+                return a.h < h;
+            }
             return (a.g + a.h) < (g + h);
         }
     };

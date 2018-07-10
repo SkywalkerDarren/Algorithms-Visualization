@@ -14,13 +14,13 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>561</width>
-      <height>25</height>
+      <width>541</width>
+      <height>27</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -78,12 +78,12 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>30</y>
-      <width>561</width>
+      <width>541</width>
       <height>27</height>
      </rect>
     </property>
@@ -104,7 +104,7 @@
      <item>
       <widget class="QLineEdit" name="row_edit">
        <property name="text">
-        <string>10</string>
+        <string>50</string>
        </property>
       </widget>
      </item>
@@ -124,7 +124,7 @@
      <item>
       <widget class="QLineEdit" name="col_edit">
        <property name="text">
-        <string>10</string>
+        <string>50</string>
        </property>
       </widget>
      </item>
@@ -144,7 +144,7 @@
      <item>
       <widget class="QLineEdit" name="size_edit">
        <property name="text">
-        <string>20</string>
+        <string>15</string>
        </property>
       </widget>
      </item>
@@ -164,7 +164,7 @@
      <item>
       <widget class="QLineEdit" name="density_edit">
        <property name="text">
-        <string>5</string>
+        <string>3</string>
        </property>
       </widget>
      </item>
@@ -184,7 +184,7 @@
      <item>
       <widget class="QLineEdit" name="interval_edit">
        <property name="text">
-        <string>100</string>
+        <string>10</string>
        </property>
       </widget>
      </item>
@@ -208,6 +208,74 @@
        </property>
        <property name="flat">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>0</y>
+      <width>251</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="1">
+      <widget class="QLabel" name="end_point">
+       <property name="text">
+        <string>(x,y)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="start_point_lbl">
+       <property name="text">
+        <string>start point:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="end_point_lbl">
+       <property name="text">
+        <string>end point:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="start_point">
+       <property name="text">
+        <string>(x,y)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="distance_lbl">
+       <property name="text">
+        <string>distance:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="steps_lbl">
+       <property name="text">
+        <string>steps:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="steps">
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLabel" name="distance">
+       <property name="text">
+        <string>0</string>
        </property>
       </widget>
      </item>
