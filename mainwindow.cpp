@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -62,8 +63,8 @@ void MainWindow::paintEvent(QPaintEvent *) {
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
-    if(event->button() == Qt::LeftButton && event->pos().x() >= 20 && event->pos().x() <= 20 + W * N
-            && event->pos().y() >= 80 && event->pos().y() <= 80 + W * M) {
+    if(event->button() == Qt::LeftButton && event->pos().x() >= 20 && event->pos().x() < 20 + W * N
+            && event->pos().y() >= 80 && event->pos().y() < 80 + W * M) {
         QPoint point = event->pos();
         int x = (point.x()-20)/W;
         int y = (point.y()-80)/W;
@@ -99,10 +100,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             select_end = false;
             QString s = QString::fromStdString("(" + std::to_string(x) + "," + std::to_string(y) + ")");
             ui->end_point->setText(s);
-        } else if (p[y][x] == "O") {
-            p[y][x] = "X";
-        } else if (p[y][x] == "X") {
-            p[y][x] = "O";
         }
 
         update();
@@ -110,19 +107,26 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
-    if(event->buttons() & Qt::LeftButton && event->pos().x() >= 20 && event->pos().x() <= 20 + W * N
-            && event->pos().y() >= 80 && event->pos().y() <= 80 + W * M) {
+    if(event->buttons() & Qt::RightButton && event->pos().x() >= 20 && event->pos().x() < 20 + W * N
+            && event->pos().y() >= 80 && event->pos().y() < 80 + W * M) {
         QPoint point = event->pos();
         int x = (point.x()-20)/W;
         int y = (point.y()-80)/W;
-        if (p[y][x] == "O") {
-            p[y][x] = "X";
-        } else if (p[y][x] == "X") {
-            p[y][x] = "O";
-        }
+        std::cout << "p[y][x]:" << y << "," << x << std::endl;
+        p[y][x] = "X";
+        update();
 
+    }
+    if(event->buttons() & Qt::LeftButton && event->pos().x() >= 20 && event->pos().x() < 20 + W * N
+            && event->pos().y() >= 80 && event->pos().y() < 80 + W * M) {
+        QPoint point = event->pos();
+        int x = (point.x()-20)/W;
+        int y = (point.y()-80)/W;
+        std::cout << "p[y][x]:" << y << "," << x << std::endl;
+        p[y][x] = "O";
         update();
     }
+
 }
 
 MainWindow::~MainWindow()
@@ -139,12 +143,12 @@ void MainWindow::resizeWindow() {
     int height = this->size().height();
     if(height < W*M + 100) {
         height = W*M + 100;
-    } else if(W*M + 100 < 320) {
+    } else if(W*M + 100 < 600) {
         height = 600;
     }
     if (width < W*N + 40) {
         width = W*N + 40;
-    } else if(W*N + 40 < 480) {
+    } else if(W*N + 40 < 800) {
         width = 800;
     }
     this->resize(width, height);
@@ -215,7 +219,7 @@ void MainWindow::on_set_end_btn_clicked()
 
 void MainWindow::on_start_btn_clicked()
 {
-    if(p.empty()) {
+    if(p.empty() || (x1==x2&&y1==y2) || x1<0 || x2<0 || y1<0 ||y2<0 ||x1>=M||x2>=M||y1>=N||y2>=N) {
         return;
     }
     QString str = ui->algo_cbx->currentText();
