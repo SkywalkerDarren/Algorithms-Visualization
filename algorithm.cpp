@@ -56,7 +56,9 @@ algorithm::list algorithm::astar(int x1, int y1, int x2, int y2,
            int(distance::*algo)(int, int, int, int)) {
     std::vector<std::vector<std::vector<std::string>>> pList;
     pList.push_back(p);
-    if (p.empty() || p[0].empty()) return pList;
+    if (p.empty() || p[0].empty() || (x1==x2&&y1==y2) ||
+            x1<0||x2<0||y1<0||y2<0||x1>=p.size()||x2>=p.size()||y1>=p[0].size()||y2>=p[0].size())
+        return pList;
     int M = p.size();
     int N = p[0].size();
     distance dis;
