@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    algorithm.cpp
+    algorithm.cpp \
+    maze.cpp
 
 HEADERS += \
         mainwindow.h \
-    algorithm.h
+    algorithm.h \
+    maze.h
 
 FORMS += \
         mainwindow.ui

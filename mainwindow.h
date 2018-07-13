@@ -49,11 +49,11 @@ private:
     int W, M, N;
     int x1, x2, y1, y2;
     bool select_start = false, select_end = false, isPaint = false;
-    std::vector<std::vector<std::string>> p;
-    algorithm::list pList;
+    algorithm::printList p;
+    static int printStep;
     void resizeWindow();
     void createRandomMap();
-
+    void printRect(int i, int j, QPainter painter, QColor color);
 };
 
 #endif // MAINWINDOW_H
