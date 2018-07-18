@@ -63,6 +63,7 @@ algorithm::nodeMap algorithm::astar(int x1, int y1, int x2, int y2, algorithm::n
     std::priority_queue<Node> q;
     Node n(x1, y1);
     n.h = (dis.*algo)(x1, y1, x2, y2);
+    n.val = "S";
     q.push(n);
     p[x1][y1] = n;
 
