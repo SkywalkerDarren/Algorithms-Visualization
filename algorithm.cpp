@@ -1,8 +1,9 @@
 #include "algorithm.h"
 
-algorithm::algorithm(printList &p)
+algorithm::algorithm(algorithm::nodeMap &p)
 {
     algo = &distance::manhattan; //select distance algorithm
+    // init map, close set, set start point, end point
     for (int i = 0; i < p.size(); i++) {
         std::vector<int> gt;
         gt.resize(p[i].size(), 0);
@@ -30,10 +31,8 @@ void algorithm::setAlgo(int (distance::*algo)(int, int, int, int)) {
     this->algo = algo;
 }
 
-algorithm::printList algorithm::start() {
-    printList pList = astar(x1,y1,x2,y2,p,g,s,algo);
-    p = pList.back();
-    return pList;
+algorithm::nodeMap algorithm::start() {
+    return astar(x1,y1,x2,y2,p,g,s,algo);
 }
 
 int algorithm::distance::chebyshev(int i, int j, int x2, int y2) {
@@ -41,7 +40,7 @@ int algorithm::distance::chebyshev(int i, int j, int x2, int y2) {
 }
 int algorithm::distance::bfs(int i, int j, int x2, int y2) {
     i = j = x2 = y2 = 0;
-    return 0; //BFS
+    return 0; //雪比切夫距离
 }
 int algorithm::distance::euclidean(int i, int j, int x2, int y2) {
     return (int) (sqrt((i - x2) * (i - x2) + (j - y2) * (j - y2))); //欧几里德距离
@@ -50,36 +49,39 @@ int algorithm::distance::manhattan(int i, int j, int x2, int y2) {
     return abs(i - x2) + abs(j - y2); //曼哈顿距离
 }
 
-algorithm::printList algorithm::astar(int x1, int y1, int x2, int y2, printList &p,
+algorithm::nodeMap algorithm::astar(int x1, int y1, int x2, int y2, algorithm::nodeMap p,
            const std::vector<std::vector<int>> g, std::vector<std::vector<int>> s,
            int(distance::*algo)(int, int, int, int)) {
-
     if (p.empty() || p[0].empty() || (x1==x2&&y1==y2) ||
             x1<0||x2<0||y1<0||y2<0||x1>=p.size()||x2>=p.size()||y1>=p[0].size()||y2>=p[0].size())
         return p;
     int M = p.size();
     int N = p[0].size();
     distance dis;
-    // init
     int c = 0;
     s[x1][y1] = 1;
     std::priority_queue<Node> q;
-    q.push({x1, y1, 0, (dis.*algo)(x1, y1, x2, y2)});
-    p[x1][y1].g = 0;
+    Node n(x1, y1);
+    n.h = (dis.*algo)(x1, y1, x2, y2);
+    q.push(n);
+    p[x1][y1] = n;
+
     bool exit = false;
-    // astar
     while (!q.empty()) {
-        Node n = q.top();
+        n = q.top();
         q.pop();
         for (int i = 0; i < 4; ++i) {
             int a = diri[i] + n.i;
             int b = dirj[i] + n.j;
             if (overflow(a, b, M, N) && s[a][b] != 1 && g[a][b] != 1) {
+                Node t(a, b);
+                t.g = n.g + 1;
+                t.h = (dis.*algo)(a, b, x2, y2);
                 c++;
-                s[a][b] = 1;
-                q.push({a, b, n.g + 1, (dis.*algo)(a, b, x2, y2)});
+                p[a][b] = t;
                 p[a][b].val = dir[i];
-                p[a][b].g = n.g + 1;
+                s[a][b] = 1;
+                q.push(t);
                 if (a == x2 && b == y2) {
                     print(p,x2,y2);
                     std::cout << "ok " << c << " step" << std::endl;
@@ -101,7 +103,7 @@ algorithm::printList algorithm::astar(int x1, int y1, int x2, int y2, printList 
 bool algorithm::overflow(int a, int b, int m, int n) {
     return a >= 0 && b >= 0 && a < m && b < n;
 }
-void algorithm::print(printList &p, int x2, int y2) {
+void algorithm::print(algorithm::nodeMap &p, int x2, int y2) {
     int x = x2, y = y2;
     int len = 0;
     while (p[x][y].val != "S") {

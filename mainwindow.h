@@ -48,12 +48,12 @@ private:
     Ui::MainWindow *ui;
     int W, M, N;
     int x1, x2, y1, y2;
+    int degree;
     bool select_start = false, select_end = false, isPaint = false;
-    algorithm::printList p;
-    static int printStep;
+    algorithm::nodeMap p;
     void resizeWindow();
     void createRandomMap();
-    void printRect(int i, int j, QPainter painter, QColor color);
+
 };
 
 #endif // MAINWINDOW_H

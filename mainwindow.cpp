@@ -9,47 +9,57 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 }
 
-void MainWindow::printRect(int i, int j, QPainter painter, QColor color)
-{
-    QPoint pos(20, 80);
-    QRect rect(pos, QSize(W, W));
-    const QPoint dir[] = {QPoint(0,W), QPoint(W,0)};
-    pos = pos + i*dir[0] + j*dir[1];
-    painter.setBrush(color);
-    rect.moveTo(pos);
-    painter.drawRect(rect);
-}
-
 void MainWindow::paintEvent(QPaintEvent *) {
     if(p.empty()) {return;}
-    // init
     QPainter painter(this);
     QPen pen(QColor(128,128,128));
     painter.setPen(pen);
+    const QPoint start(20, 80);
+    const QPoint dir[] = {QPoint(0,W), QPoint(W,0)};
     int length = 0;
     int steps = 0;
-    // print
+    QPoint pos = start;
     QRect rect(pos, QSize(W, W));
     for(int i = 0; i < p.size(); i++) {
         for(int j = 0; j < p[i].size(); j++) {
-            if (p[i][j].g > printStep && p[i][j].val != "S" && p[i][j].val != "E" && p[i][j].val != "X") {
-                printRect(i, j, painter, QColor(255,255,255));
+            if (p[i][j].g > degree) { //TODO
+                pos = start + i * dir[0] + j * dir[1];
+                painter.setBrush(QColor(255, 255, 255));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
                 continue;
             }
-
             if(p[i][j].val == "O") {
-                printRect(i, j, painter, QColor(0,0,0));
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(0,0,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
             } else if (p[i][j].val == "X"){
-                printRect(i, j, painter, QColor(255,255,255));
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(255,255,255));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
             } else if (p[i][j].val == "S"){
-                printRect(i, j, painter, QColor(0,0,255));
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(0,0,255));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
             } else if (p[i][j].val == "E") {
-                printRect(i, j, painter, QColor(255,0,0));
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(255,0,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
             } else if (p[i][j].val == "A"){
-                printRect(i, j, painter, QColor(0,255,0));
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(0,255,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
                 length++;
             } else {
-                printRect(i, j, painter, QColor(255,255,0));
+                pos = start + i*dir[0] + j*dir[1];
+                painter.setBrush(QColor(255,255,0));
+                rect.moveTo(pos);
+                painter.drawRect(rect);
                 steps++;
             }
         }
@@ -153,9 +163,10 @@ void MainWindow::resizeWindow() {
     // blank map
     p.clear();
     for (int i = 0; i < M; i++) {
-        std::vector<algorithm::preNode> pt;
+        std::vector<algorithm::Node> pt;
         for (int j = 0; j < N; j++) {
-            algorithm::preNode node = {"X", -1};
+            algorithm::Node node(i, j);
+            node.val = "X";
             pt.push_back(node);
         }
         p.push_back(pt);
@@ -180,14 +191,14 @@ void MainWindow::createRandomMap() {
     generator.seed(seed);
     p.clear();
     for (int i = 0; i < row; i++) {
-        std::vector<algorithm::preNode> pt;
+        std::vector<algorithm::Node> pt;
         for (int j = 0; j < col; j++) {
             int k = distribution(generator) < 1;
-            algorithm::preNode node;
+            algorithm::Node node(i, j);
             if(k) {
-                node = {"O", -1};
+                node.val = "O";
             } else {
-                node = {"X", -1};
+                node.val = "X";
             }
             pt.push_back(node);
         }
@@ -235,6 +246,7 @@ void MainWindow::on_start_btn_clicked()
     }
     algorithm a(p);
     a.setAlgo(algo);
+    p = a.start();
     timer = new QTimer();
     reset = false;
     connect(timer, SIGNAL(timeout()), this, SLOT(updateMap()));
@@ -249,8 +261,8 @@ void MainWindow::updateMap() {
         timer->stop();
         reset = false;
     }
-    if (i < step) {
-        printStep = i;
+    if (i <= p[x2][y2].g) {
+        degree = i;
         update();
         i++;
     } else {
@@ -266,8 +278,8 @@ void MainWindow::on_clear_btn_clicked()
     if (p.empty()) return;
     for (int i = 0; i < p.size(); i++) {
         for (int j = 0; j < p[0].size(); j++) {
-            if (p[i][j] != "E" && p[i][j] != "S" && p[i][j] != "O" && p[i][j] != "X") {
-                p[i][j] = "X";
+            if (p[i][j].val != "E" && p[i][j].val != "S" && p[i][j].val != "O" && p[i][j].val != "X") {
+                p[i][j].val = "X";
             }
         }
     }
